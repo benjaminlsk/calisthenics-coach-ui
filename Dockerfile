@@ -1,8 +1,8 @@
 FROM node:20 AS build
 WORKDIR /app
 RUN npm install -g npm@11
-COPY package*.json ./
-RUN npm install --no-audit --no-fund --loglevel=verbose
+COPY package.json ./
+RUN npm config set registry https://registry.npmjs.org/ && npm install
 COPY . .
 RUN npx ng build
 
