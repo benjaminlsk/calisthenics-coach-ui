@@ -1,0 +1,169 @@
+<div class="onboarding-container">
+
+  <!-- Header avec progression -->
+  <header class="onboarding-header">
+    <div class="brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-name">StreetCoach</span>
+    </div>
+    <div class="progress-bar">
+      <div
+        class="progress-fill"
+        [style.width.%]="(currentStep / totalSteps) * 100">
+      </div>
+    </div>
+    <span class="step-counter">{{ currentStep }} / {{ totalSteps }}</span>
+  </header>
+
+  <!-- Contenu du wizard -->
+  <main class="wizard-body">
+
+    <!-- Étape 1 : Identité + Niveau -->
+    @if (currentStep === 1) {
+      <section class="step-section" @fadeSlide>
+        <h1 class="step-title">Qui es-tu, athlète ?</h1>
+        <p class="step-subtitle">Ton coach a besoin de te connaître pour t'amener plus loin.</p>
+
+        <div class="field-group">
+          <label class="field-label" for="name">Ton prénom</label>
+          <input
+            id="name"
+            type="text"
+            class="field-input"
+            placeholder="Ex. : Lucas"
+            [(ngModel)]="form.name"
+            autocomplete="off" />
+        </div>
+
+        <div class="field-group">
+          <label class="field-label">Ton niveau actuel</label>
+          <div class="cards-grid">
+            @for (lvl of levels; track lvl.key) {
+              <button
+                class="level-card"
+                [class.selected]="form.level === lvl.key"
+                (click)="form.level = lvl.key">
+                <span class="card-emoji">{{ lvl.emoji }}</span>
+                <span class="card-label">{{ lvl.label }}</span>
+                <span class="card-desc">{{ lvl.desc }}</span>
+              </button>
+            }
+          </div>
+        </div>
+      </section>
+    }
+
+    <!-- Étape 2 : Objectifs -->
+    @if (currentStep === 2) {
+      <section class="step-section" @fadeSlide>
+        <h1 class="step-title">Qu'est-ce que tu vises ?</h1>
+        <p class="step-subtitle">Sélectionne un ou plusieurs objectifs. Sois ambitieux.</p>
+
+        <div class="goals-grid">
+          @for (goal of availableGoals; track goal.key) {
+            <button
+              class="goal-card"
+              [class.selected]="isGoalSelected(goal.key)"
+              (click)="toggleGoal(goal.key)">
+              <span class="goal-emoji">{{ goal.emoji }}</span>
+              <span class="goal-label">{{ goal.label }}</span>
+              @if (isGoalSelected(goal.key)) {
+                <span class="check-badge">✓</span>
+              }
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Étape 3 : Fréquence -->
+    @if (currentStep === 3) {
+      <section class="step-section" @fadeSlide>
+        <h1 class="step-title">Combien de jours par semaine ?</h1>
+        <p class="step-subtitle">Sois réaliste. La régularité bat l'intensité sur le long terme.</p>
+
+        <div class="frequency-selector">
+          @for (day of [2,3,4,5,6]; track day) {
+            <button
+              class="freq-btn"
+              [class.selected]="form.weekly_frequency === day"
+              (click)="form.weekly_frequency = day">
+              <span class="freq-number">{{ day }}</span>
+              <span class="freq-label">{{ day === 1 ? 'jour' : 'jours' }}</span>
+            </button>
+          }
+        </div>
+
+        <p class="frequency-hint">
+          {{ getFrequencyHint() }}
+        </p>
+      </section>
+    }
+
+    <!-- Étape 4 : Matériel -->
+    @if (currentStep === 4) {
+      <section class="step-section" @fadeSlide>
+        <h1 class="step-title">Ton matériel disponible</h1>
+        <p class="step-subtitle">Ton coach construit les séances avec ce que tu as vraiment.</p>
+
+        <div class="cards-grid">
+          @for (eq of equipmentOptions; track eq.key) {
+            <button
+              class="equipment-card"
+              [class.selected]="form.equipment === eq.key"
+              (click)="form.equipment = eq.key">
+              <span class="card-emoji">{{ eq.emoji }}</span>
+              <span class="card-label">{{ eq.label }}</span>
+            </button>
+          }
+        </div>
+      </section>
+    }
+
+    <!-- Étape 5 : Restrictions -->
+    @if (currentStep === 5) {
+      <section class="step-section" @fadeSlide>
+        <h1 class="step-title">Santé & restrictions</h1>
+        <p class="step-subtitle">Blessures passées, douleurs actuelles — sois honnête. C'est pour ta sécurité.</p>
+
+        <div class="field-group">
+          <textarea
+            class="field-textarea"
+            placeholder="Ex. : Tendinite à l'épaule droite il y a 6 mois, douleur au genou lors des squats lourds..."
+            [(ngModel)]="form.injuries"
+            rows="5">
+          </textarea>
+          <span class="field-hint">Laisse vide si tout va bien 💪</span>
+        </div>
+      </section>
+    }
+
+  </main>
+
+  <!-- Navigation -->
+  <footer class="wizard-footer">
+    <button
+      class="btn-secondary"
+      (click)="previousStep()"
+      [style.visibility]="currentStep > 1 ? 'visible' : 'hidden'">
+      ← Retour
+    </button>
+
+    @if (currentStep < totalSteps) {
+      <button
+        class="btn-primary"
+        (click)="nextStep()"
+        [disabled]="!canProceed()">
+        Continuer →
+      </button>
+    } @else {
+      <button
+        class="btn-primary btn-cta"
+        (click)="submit()"
+        [disabled]="isSubmitting">
+        {{ isSubmitting ? 'Création...' : 'Commencer l\'entraînement ⚡' }}
+      </button>
+    }
+  </footer>
+
+</div>

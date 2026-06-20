@@ -1,0 +1,133 @@
+<div class="chat-layout">
+
+  <!-- Sidebar profil -->
+  <aside class="sidebar">
+    <div class="sidebar-brand">
+      <span class="brand-icon">⚡</span>
+      <span class="brand-name">StreetCoach</span>
+    </div>
+
+    @if (user) {
+      <div class="athlete-card">
+        <div class="athlete-avatar">{{ user.name[0].toUpperCase() }}</div>
+        <div class="athlete-info">
+          <span class="athlete-name">{{ user.name }}</span>
+          <span class="athlete-level">{{ getLevelLabel(user.level) }}</span>
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3 class="section-label">Objectifs</h3>
+        <div class="goals-list">
+          @for (goal of user.goals; track goal) {
+            <span class="goal-tag">{{ goal.replace('_', ' ') }}</span>
+          }
+        </div>
+      </div>
+
+      <div class="profile-section">
+        <h3 class="section-label">Fréquence</h3>
+        <span class="profile-value">{{ user.weekly_frequency }}x / semaine</span>
+      </div>
+    }
+
+    <div class="sidebar-footer">
+      <a routerLink="/onboarding" class="link-update">Modifier mon profil</a>
+    </div>
+  </aside>
+
+  <!-- Zone de chat -->
+  <main class="chat-main">
+
+    <!-- Header chat -->
+    <header class="chat-header">
+      <div class="coach-identity">
+        <div class="coach-avatar">SC</div>
+        <div>
+          <span class="coach-name">StreetCoach</span>
+          <span class="coach-status">
+            <span class="status-dot"></span>
+            En ligne
+          </span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Messages -->
+    <div class="messages-container">
+
+      <!-- État vide : raccourcis -->
+      @if (!hasMessages && !isLoading) {
+        <div class="empty-state">
+          <p class="empty-greeting">
+            Prêt à travailler, {{ user?.name }} ?
+          </p>
+          <p class="empty-hint">Pose une question ou utilise un raccourci ci-dessous.</p>
+
+          <div class="quick-actions">
+            @for (action of quickActions; track action.label) {
+              <button
+                class="quick-btn"
+                (click)="sendMessage(action.message)">
+                {{ action.label }}
+              </button>
+            }
+          </div>
+        </div>
+      }
+
+      <!-- Historique des messages -->
+      @for (msg of messages; track msg.timestamp) {
+        <div class="message-row" [class.user-row]="msg.role === 'user'">
+          @if (msg.role === 'assistant') {
+            <div class="avatar coach-bubble-avatar">SC</div>
+          }
+          <div
+            class="message-bubble"
+            [class.user-bubble]="msg.role === 'user'"
+            [class.coach-bubble]="msg.role === 'assistant'">
+            <div class="bubble-content" [innerHTML]="msg.content | coachFormat"></div>
+            <span class="bubble-time">
+              {{ msg.timestamp | date:'HH:mm' }}
+            </span>
+          </div>
+        </div>
+      }
+
+      <!-- Indicateur de frappe -->
+      @if (isLoading) {
+        <div class="message-row">
+          <div class="avatar coach-bubble-avatar">SC</div>
+          <div class="message-bubble coach-bubble typing-bubble">
+            <span class="dot"></span>
+            <span class="dot"></span>
+            <span class="dot"></span>
+          </div>
+        </div>
+      }
+
+      <div #messagesEnd></div>
+    </div>
+
+    <!-- Input -->
+    <footer class="chat-input-area">
+      <div class="input-wrapper">
+        <textarea
+          class="message-input"
+          placeholder="Pose ta question à StreetCoach... (Entrée pour envoyer)"
+          [(ngModel)]="inputMessage"
+          (keydown)="onKeyDown($event)"
+          rows="1"
+          [disabled]="isLoading">
+        </textarea>
+        <button
+          class="send-btn"
+          (click)="sendMessage()"
+          [disabled]="!inputMessage.trim() || isLoading">
+          →
+        </button>
+      </div>
+    </footer>
+
+  </main>
+</div>
