@@ -2,7 +2,7 @@ FROM node:20 AS build
 WORKDIR /app
 RUN npm install -g npm@11
 COPY package*.json ./
-RUN npm install
+RUN npm install --no-audit --no-fund --loglevel=verbose
 COPY . .
 RUN npx ng build
 
