@@ -1,11 +1,12 @@
-FROM node:20-alpine AS build
+FROM node:20 AS build
 WORKDIR /app
+RUN npm install -g npm@11
 COPY package*.json ./
 RUN npm install
 COPY . .
 RUN npx ng build
 
-FROM node:20-alpine
+FROM node:20-slim
 WORKDIR /app
 COPY --from=build /app/dist ./dist
 EXPOSE 4000
