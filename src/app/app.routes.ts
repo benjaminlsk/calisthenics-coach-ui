@@ -1,5 +1,10 @@
-import { Routes } from '@angular/router';
-import { homeRedirectGuard } from './core/guards/home-redirect.guard';
+import { inject } from '@angular/core';
+import { CanActivateFn, Router, Routes } from '@angular/router';
+
+export const homeRedirectGuard: CanActivateFn = () => {
+  const router = inject(Router);
+  return router.parseUrl('/onboarding');
+};
 
 export const routes: Routes = [
   {
