@@ -1,10 +1,12 @@
 import { Routes } from '@angular/router';
+import { homeRedirectGuard } from './core/guards/home-redirect.guard';
 
 export const routes: Routes = [
   {
     path: '',
-    redirectTo: 'onboarding',
-    pathMatch: 'full'
+    pathMatch: 'full',
+    canActivate: [homeRedirectGuard],
+    children: []          // route sans composant : le guard fait la redirection
   },
   {
     path: 'onboarding',
