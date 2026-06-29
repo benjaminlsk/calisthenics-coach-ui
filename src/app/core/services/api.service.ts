@@ -9,7 +9,7 @@ import {
 @Injectable({ providedIn: 'root' })
 export class ApiService {
 
-  private readonly BASE_URL = 'http://localhost:8080/api';
+  private readonly BASE_URL = 'https://calisthenics-coach-backend.onrender.com/api';
 
   constructor(private http: HttpClient) {}
 
