@@ -1,5 +1,4 @@
-import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { Component, OnInit, ViewChild, ElementRef, AfterViewChecked, ChangeDetectorRef } from '@angular/core';import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { MessageResponse, UserResponse } from '../../core/models/models';
@@ -42,7 +41,8 @@ export class ChatComponent implements OnInit, AfterViewChecked {
   constructor(
     private route: ActivatedRoute,
     private api: ApiService,
-    public userState: UserStateService
+    public userState: UserStateService,
+    private cdr: ChangeDetectorRef
   ) {}
 
   ngOnInit(): void {
@@ -60,9 +60,10 @@ export class ChatComponent implements OnInit, AfterViewChecked {
 
   private loadUser(): void {
     this.api.getUser(this.userId).subscribe({
-      next: (user) => {
+      next: (user: UserResponse) => {
         this.user = user;
         this.userState.saveUser(user);
+        this.cdr.markForCheck();
       }
     });
   }
@@ -76,6 +77,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
           timestamp: new Date(m.created_at)
         }));
         this.shouldScroll = true;
+        this.cdr.markForCheck();
       }
     });
   }
@@ -99,6 +101,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         });
         this.isLoading = false;
         this.shouldScroll = true;
+        this.cdr.markForCheck();
       },
       error: (err) => {
         console.error('Erreur envoi message', err);
@@ -109,6 +112,7 @@ export class ChatComponent implements OnInit, AfterViewChecked {
         });
         this.isLoading = false;
         this.shouldScroll = true;
+        this.cdr.markForCheck();
       }
     });
   }
